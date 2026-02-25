@@ -13,7 +13,9 @@
     </style>
 </head>
 <body>
-    <div id="console"></div>
+    <div id="console">LET'S PLAY ROCK-PAPER-SCISSORS!
+    What is your choice? 0 = rock, 1 = paper, 2 = scissors
+    </div>
     <div class="input-line">
         <label for="user-input">></label>
         <input type="text" id="user-input" autofocus autocomplete="off">
@@ -63,7 +65,7 @@
             bloqueado = False
             actualizar_consola()
 
-        actualizar_consola()
+        #actualizar_consola()
 
         async def on_input(event):
             global scorep, scorec, ronda, texto_historial, bloqueado
@@ -123,4 +125,5 @@
         document.querySelector("#user-input").addEventListener("keydown", input_proxy)
     </script>
 </body>
+
 </html>
