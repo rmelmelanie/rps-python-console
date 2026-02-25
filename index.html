@@ -7,41 +7,38 @@
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
     <style>
         body { 
-            background-color: #1a1a1a; color: #ffffff; 
-            font-family: 'Courier New', Courier, monospace; 
-            margin: 0; 
-            padding: 10px; 
-            box-sizing: border-box; 
-            display: flex; 
-            flex-direction: column; 
-            height: 100dvh; 
+            background-color: #1a1a1a; color: #ffffff; font-family: 'Courier New', Courier, monospace; 
+            margin: 0; padding: 10px; box-sizing: border-box; display: flex; 
+            flex-direction: column; height: 100dvh; 
         }
+
+        /* Big screens */
         #console { 
-            white-space: pre-wrap; 
-            flex-grow: 1; 
-            overflow-y: auto; 
-            overflow-x: auto; 
-            margin-bottom: 10px; 
-            line-height: 1.2; 
-            font-size: 13px; 
+            white-space: pre-wrap; flex-grow: 1; 
+            overflow-y: auto; margin-bottom: 10px; 
+            line-height: 1.2; font-size: 16px; 
         }
+
+        /* Small screens */
+        @media (max-width: 600px) {
+            #console { 
+                font-size: 12px; 
+            }
+        }
+
         .input-line { 
-            display: flex; 
-            align-items: center; 
-            border-top: 1px solid #333; 
-            padding-top: 10px; 
-            padding-bottom: 10px;
+            display: flex; align-items: center; 
+            border-top: 1px solid #333; padding-top: 10px; padding-bottom: 10px;
+            cursor: text; 
         }
+
         input { 
-            background: transparent; 
-            border: none; 
-            color: #ffffff; 
-            font-family: inherit; 
-            font-size: 16px; 
-            outline: none; 
-            flex: 1; 
-            margin-left: 5px; 
+            background: transparent; border: none; color: #ffffff; 
+            font-family: inherit; font-size: 16px; 
+            outline: none; flex: 1; margin-left: 5px; 
+            touch-action: manipulation; 
         }
+
         label { color: #00ff00; font-weight: bold; font-size: 16px; }
     </style>
 </head>
@@ -160,4 +157,5 @@
 </body>
 
 </html>
+
 
