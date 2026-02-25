@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Python Console</title>
+    <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
+    <style>
+        body { background-color: #1a1a1a; color: #ffffff; font-family: 'Courier New', Courier, monospace; margin: 0; padding: 20px; display: flex; flex-direction: column; height: 95vh; }
+        #console { white-space: pre-wrap; flex-grow: 1; overflow-y: auto; margin-bottom: 10px; line-height: 1.2; }
+        .input-line { display: flex; align-items: center; border-top: 1px solid #333; padding-top: 10px; }
+        input { background: transparent; border: none; color: #ffffff; font-family: inherit; font-size: inherit; outline: none; flex: 1; margin-left: 5px; }
+        label { color: #00ff00; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="console"></div>
+    <div class="input-line">
+        <label for="user-input">></label>
+        <input type="text" id="user-input" autofocus autocomplete="off">
+    </div>
+
+    <script type="py">
+        from pyscript import display, document
+        from pyodide.ffi import create_proxy
+        import random
+
+        # --- VISUALS---
+        rock2 = '''\n    _______           _______\n---'   ____)         (____   '---\n      (_____)       (_____)\n      (_____)       (_____)\n      (____)         (____)\n---.__(___)           (___)__.---\n'''
+        paper2 = '''\n     _______                     _______\n---'    ____)____           ____(____   '----\n           ______)         (______\n          _______)         (_______\n         _______)           (_______\n---.__________)                (_________.---\n'''
+        scissors2 = '''\n    _______                      _______\n---'   ____)____            ____(____   '---\n          ______)          (______\n       __________)        (__________\n      (____)                    (____)\n---.__(___)                      (___)__.---\n'''
+        rockvspaper = '''\n    _______                     _______\n---'   ____)               ____(____   '----\n      (_____)             (______\n      (_____)            (_______\n      (____)              (_______\n---.__(___)                  (_________.---\n'''
+        rockvsscissors = '''\n    _______                   _______\n---'   ____)             ____(____   '---\n      (_____)           (______\n      (_____)          (__________\n      (____)                 (____)\n---.__(___)                   (___)__.---\n'''
+        papervsrock = '''\n    _______               _______\n---'    ____)____        (____   '---\n           ______)      (_____)\n          _______)      (_____)\n         _______)       (____)\n---.__________)          (___)__.---\n'''
+        papervsscissors = '''\n    _______                   _______\n---'    ____)____        ____(____   '---\n           ______)      (______\n          _______)     (__________\n         _______)            (____)\n---.__________)               (___)__.---\n'''
+        scissorsvsrock = '''\n   _______               _______\n---'   ____)____        (____   '---\n          ______)      (_____)\n       __________)     (_____)\n      (____)           (____)\n---.__(___)             (___)__.---\n'''
+        scissorsvspaper = '''\n    _______                    _______\n---'   ____)____          ____(____   '----\n          ______)        (______\n       __________)      (_______\n      (____)             (_______\n---.__(___)                 (_________.---\n'''
+
+        hands = [[ rock2, rockvspaper, rockvsscissors ],
+                 [ papervsrock, paper2, papervsscissors ],
+                 [ scissorsvsrock, scissorsvspaper, scissors2]
+                ]
+
+        wins, defeats, scorep, scorec, ronda = 0, 0, 0, 0, 0
+        bienvenida = "LET'S PLAY ROCK-PAPER-SCISSORS!\nWhat is your choice? 0 = rock, 1 = paper, 2 = scissors\n"
+        texto_historial = ""
+        bloqueado = False
+
+        def actualizar_consola():
+            # Limpiar el div
+            document.getElementById("console").innerHTML = ""
+            display(bienvenida + texto_historial, target="console")
+            consola = document.getElementById("console")
+            consola.scrollTop = consola.scrollHeight
+
+        def reset_game():
+            global scorep, scorec, ronda, texto_historial, bloqueado, wins, defeats
+            if scorep == 2:
+                wins +=1
+            elif scorec ==2:
+                defeats +=1
+            scorep, scorec, ronda = 0, 0, 0
+            texto_historial = f"\n--- NUEVA PARTIDA ---\nWins: {wins}   Defeats: {defeats}\n"
+            bloqueado = False
+            actualizar_consola()
+
+        actualizar_consola()
+
+        async def on_input(event):
+            global scorep, scorec, ronda, texto_historial, bloqueado
+
+            if event.key == "Enter":
+                # Evitamos el comportamiento por defecto del Enter
+                event.preventDefault()
+
+                if bloqueado: return
+                bloqueado = True # Bloqueo instantáneo
+
+                val = event.target.value.strip()
+                event.target.value = ""
+
+                # Reiniciar
+                if scorep >= 2 or scorec >= 2:
+                    reset_game()
+                    return
+
+                if not val:
+                    bloqueado = False
+                    return
+
+                # --- LOGIC ---
+                texto_historial += f"\n> {val}\n"
+
+                if not val.isdigit() or int(val) > 2:
+                    texto_historial += "Invalid move\n"
+                else:
+                    ronda += 1
+                    player = int(val)
+                    compu = random.randint(0,2)
+                    texto_historial += f"Round {ronda}!!!\n{hands[player][compu]}\n{compu}\n"
+
+                    if player == compu:
+                        texto_historial += "It's a tie!\n"
+                    elif (player == 0 and compu != 1) or (player == 1 and compu != 2) or (player == 2 and compu != 0):
+                        scorep += 1
+                    else:
+                        scorec += 1
+                    texto_historial += f"You: {scorep}   Opponent: {scorec}\n"
+
+                if scorep == 2:
+                    texto_historial += "\nYou've won!\n\nMelanie just learned: when the code runs, don't touch it please!\n(Press ENTER to play again)"
+                elif scorec == 2:
+                    texto_historial += "\nYou've lost!\n\nMelanie just learned: when the code runs, don't touch it please!\n(Press ENTER to play again)"
+                else:
+                    texto_historial += "What is your choose? 0 = rock, 1 = paper, 2 = scissors\n"
+
+                actualizar_consola()
+
+                # Desbloqueo manual
+                bloqueado = False
+
+        # instancia del proxy
+        input_proxy = create_proxy(on_input)
+        document.querySelector("#user-input").addEventListener("keydown", input_proxy)
+    </script>
+</body>
+</html>
